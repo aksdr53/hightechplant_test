@@ -14,7 +14,7 @@ app_name = 'users'
 urlpatterns = [
     path('confirm-email/<uuid:token>/', confirm_email, name='confirm-email'),
     path('accounts/register/', login, {'template_name': 'accounts/register.html', 'authentication_form': RegistrationForm}, name='register'),
-    path('users/', user_list, name='user-list'),
+    path('users/', user_list, name='home'),
     path('users/<str:username>/', user_profile, name='user-profile'),
     path('users/<str:username>/edit/', user_edit_profile, name='user-edit-profile'),
     path('password_change/',

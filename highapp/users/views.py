@@ -1,15 +1,24 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.utils.encoding import force_bytes, force_text 
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode 
 
 from .models import EmailConfirmation, MyUser
-from .forms import RegistrationForm, UserEditForm
+from .forms import RegistrationForm, UserEditForm, LoginForm
+from .token import account_activation_token 
 
 
-def confirm_email(request, token):
-    email_confirmation = get_object_or_404(EmailConfirmation, token=token)
-    email_confirmation.confirmed = True
-    email_confirmation.save()
-    return redirect('home')
+def confirm_email(request, uidb64, token): 
+    try: 
+        uid = force_text(urlsafe_base64_decode(uidb64)) 
+        user = MyUser.objects.get(pk=uid) 
+    except(TypeError, ValueError, OverflowError, MyUser.DoesNotExist): 
+        user = None 
+    if user is not None and account_activation_token.check_token(user, token): 
+        user.is_active = True 
+        user.save() 
+    return redirect('users:home')
 
 def register(request):
     if request.method == 'POST':
@@ -17,10 +26,10 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')
+            return redirect('users:home')
     else:
         form = RegistrationForm()
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'users/signup.html', {'form': form})
 
 def user_list(request):
     users = MyUser.objects.all()

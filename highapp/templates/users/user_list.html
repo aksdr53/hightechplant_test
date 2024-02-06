@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Пользователи
+{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+{% for user in users %}
+<article>
+  <ul>
+    <li>
+      Username: {{ user.username }}
+    </li>
+    <li>
+      Email: {{ user.email }}
+    </li>
+  </ul>
+
+</article>
+{% endfor %}
+</div>
+<div class="container py-5">
+{% include 'includes/paginator.html' %}
+</div>
+{% endblock %}

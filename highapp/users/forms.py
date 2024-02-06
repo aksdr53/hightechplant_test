@@ -1,11 +1,15 @@
 from django import forms
 from django.core.mail import send_mail
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.template.loader import render_to_string 
 
 from .models import EmailConfirmation, MyUser
+from .token import account_activation_token 
 
 
-class RegistrationForm(forms.ModelForm):
-    email = forms.EmailField(required=True)
+class RegistrationForm(UserCreationForm):
 
     class Meta:
         model = MyUser
@@ -13,18 +17,27 @@ class RegistrationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=commit)
-        email_confirmation = EmailConfirmation.objects.create(user=user)
+        message = render_to_string('acc_activate_email.html', { 
+                'user': user, 
+                'domain': '127.0.0.1:8000', 
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)), 
+                'token':account_activation_token.make_token(user), 
+            })
         send_mail(
-            'Подтверждение электронной почты',
-            'Пожалуйста, перейдите по ссылке для подтверждения вашей электронной почты.',
-            'from@example.com',
-            [user.email],
-            fail_silently=False,
-        )
+            subject='Email confirmation',
+            message=message,
+            from_email='from@example.com',
+            recipient_list=[user.email],
+            fail_silently=False,)
         return user
 
 
-class UserEditForm(forms.ModelForm):
+class UserEditForm(UserChangeForm):
     class Meta:
         model = MyUser
         fields = ['username', 'email']
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label='Имя пользователя', max_length=50)
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)

@@ -1,12 +1,12 @@
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from django.utils.encoding import force_bytes, force_text 
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode 
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 
-from .models import EmailConfirmation, MyUser
-from .forms import RegistrationForm, UserEditForm, LoginForm
-from .token import account_activation_token 
+from .forms import RegistrationForm, UserEditForm
+from .models import  MyUser
+from .token import account_activation_token
 
 
 def confirm_email(request, uidb64, token): 
@@ -37,16 +37,25 @@ def user_list(request):
 
 def user_profile(request, username):
     user = get_object_or_404(MyUser, username=username)
-    return render(request, 'users/user_profile.html', {'user': user})
+    current_user = request.user
+    return render(request, 'users/user_detail.html', {'user': user, 'current_user': current_user})
 
+@login_required
 def user_edit_profile(request, username):
     user = get_object_or_404(MyUser, username=username)
+    previous_email = user.email
+    current_user = request.user
+    if current_user != user:
+        return redirect('users:user-profile', username=user.username)
     if request.method == 'POST':
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
+            user.username = form.cleaned_data['username']
             user.email = form.cleaned_data['email']
+            if user.email != previous_email:
+                user.is_active = False
             form.save()
-            return redirect('user-profile', username=user.username)
+            return redirect('users:user-profile', username=user.username)
     else:
         form = UserEditForm(instance=user)
-    return render(request, 'users/user_edit_profile.html', {'form': form})
+    return render(request, 'users/user_edit_profile.html', {'form': form, 'user': user})

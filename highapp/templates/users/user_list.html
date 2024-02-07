@@ -15,6 +15,9 @@
     <li>
       Email: {{ user.email }}
     </li>
+    <li>
+      <a href="{% url 'users:user-profile' user.username %}">подробная информация</a>
+    </li>
   </ul>
 
 </article>

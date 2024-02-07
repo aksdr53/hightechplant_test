@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Зарегистрироваться{% endblock %}
+{% block title %}Редактировать данные пользователя{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8 p-5">
       <div class="card">
         <div class="card-header">
-          Зарегистрироваться
+          Данные
         </div>
         <div class="card-body">
           {% if form.errors %}
@@ -23,7 +23,7 @@
             {% endfor %}
           {% endif %}
 
-            <form method="post" action="{% url 'users:register' %}">
+            <form method="post" action="{% url 'users:user-edit-profile' user.username %}">
               {% csrf_token %}
               {% for field in form %}
               <div class="form-group row my-3 p-3">
@@ -43,12 +43,12 @@
               {% endfor %}
               <div class="col-md-6 offset-md-4">
                 <button type="submit" class="btn btn-primary">
-                  Зарегистрироваться
+                  Сохранить
                 </button>
               </div>
             </form>
-          </div> 
-        </div> 
-      </div> 
-  </div> 
+          </div> <!-- card body -->
+        </div> <!-- card -->
+      </div> <!-- col -->
+  </div> <!-- row -->
 {% endblock %} 

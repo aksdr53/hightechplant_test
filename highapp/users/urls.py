@@ -8,7 +8,7 @@ from django.contrib.auth.views import (PasswordChangeView,
                                        LoginView, LogoutView)
 
 from .views import confirm_email, user_list, user_profile, user_edit_profile, register
-from .forms import RegistrationForm
+
 
 app_name = 'users'
 

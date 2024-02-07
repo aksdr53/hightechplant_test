@@ -12,10 +12,16 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    image: aksdr/highapp_backend
+    build: ./highapp/
     env_file: .env
     depends_on: 
       - db
     volumes:
       - static:/backend_static
       - media:/app/media
+  gateway:
+    build: ./gateway/
+    depends_on: 
+      - backend
+    ports:
+      - 8000:80 

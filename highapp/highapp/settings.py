@@ -99,6 +99,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+STATIC_ROOT = BASE_DIR / 'collected_static'
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 LOGIN_URL = 'users:login'
@@ -107,7 +109,7 @@ LOGIN_REDIRECT_URL = 'users:home'
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

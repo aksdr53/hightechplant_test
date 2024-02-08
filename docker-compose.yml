@@ -17,10 +17,12 @@ services:
     depends_on: 
       - db
     volumes:
-      - static:/backend_static
+      - static:/collected_static
       - media:/app/media
   gateway:
     build: ./gateway/
+    volumes:
+      - static:/staticfiles/
     depends_on: 
       - backend
     ports:

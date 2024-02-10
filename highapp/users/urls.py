@@ -7,7 +7,7 @@ from django.contrib.auth.views import (PasswordChangeView,
                                        PasswordResetCompleteView,
                                        LoginView, LogoutView)
 
-from .views import confirm_email, user_list, user_profile, user_edit_profile, register
+from .views import confirm_email, user_edit_profile, RegisterView, UserListView, user_profile
 
 
 app_name = 'users'
@@ -15,8 +15,8 @@ app_name = 'users'
 urlpatterns = [
     path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', 
     confirm_email, name='activate'),
-    path('register/', register, name='register'),
-    path('users/', user_list, name='home'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('users/', UserListView.as_view(), name='home'),
     path('login/', LoginView.as_view(template_name='users/login.html'),
          name='login'),
     path('logout/', LogoutView.as_view(template_name='users/logged_out.html'),
